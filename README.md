@@ -1,3 +1,3 @@
 # PayPhlet-Fintech
 
-Backend for PayPhlet-Fintech Project
+Backend for PayPhlet fintech project.
