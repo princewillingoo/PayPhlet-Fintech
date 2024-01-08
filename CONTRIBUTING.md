@@ -10,7 +10,7 @@
 - Clone the repository
 
    ```bash
-   git clone <https://github.com/princewillingoo/PayPhlet.git>
+   git clone <https://github.com/princewillingoo/PayPhlet-Fintech.git>
    ```
 
 - Install dependencies

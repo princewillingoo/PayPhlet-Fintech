@@ -1,3 +1,3 @@
-# PayPhlet
+# PayPhlet-Fintech
 
-Backend for PayPhlet Project
+Backend for PayPhlet-Fintech Project
