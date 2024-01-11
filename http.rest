@@ -1,0 +1,13 @@
+GET http://localhost:2024
+
+### REGISTER
+POST http://localhost:2024/auth/register
+
+### LOG IN
+POST http://localhost:2024/auth/login
+
+### REFRESH TOKEN
+POST http://localhost:2024/auth/refresh-token
+
+### LOG OUT
+DELETE http://localhost:2024/auth/logout

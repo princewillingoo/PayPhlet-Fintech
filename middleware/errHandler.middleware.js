@@ -1,7 +1,7 @@
+import createHttpError from "http-errors";
+
 export const notFound = (req, res, next) => {
-    const err = new Error(`Route ${req.originalUrl} not found`);
-    err.statusCode = 404
-    next(err);
+    next(createHttpError.NotFound())
 };
 
 export const globalErrHandler = (err, req, res, next) => {
