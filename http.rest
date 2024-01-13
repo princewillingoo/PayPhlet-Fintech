@@ -1,13 +1,33 @@
 GET http://localhost:2024
+Authorization: Bearer 
 
 ### REGISTER
 POST http://localhost:2024/auth/register
+Content-Type: application/json
+
+{
+    "email": "ben@gmail.com",
+    "name": "Ben Jason",
+    "password": "M5@TsHT~C9tM$gC"
+}
 
 ### LOG IN
 POST http://localhost:2024/auth/login
+Content-Type: application/json
+
+{
+    "email": "ekpo@gmail.com",
+    "password": "M5@TsHT~C9tM$gC"
+}
+
 
 ### REFRESH TOKEN
 POST http://localhost:2024/auth/refresh-token
+Content-Type: application/json
+
+{
+    "token": ""
+}
 
 ### LOG OUT
 DELETE http://localhost:2024/auth/logout

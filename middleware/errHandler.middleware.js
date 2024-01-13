@@ -6,14 +6,17 @@ export const notFound = (req, res, next) => {
 
 export const globalErrHandler = (err, req, res, next) => {
 
-    // stack, statusCode, source
+    // console.log(err)
+    const message = err.message;
     const stack = err?.stack;
-    const statusCode = err?.statusCode ? err?.statusCode : 500;
+    const statusCode = err?.statusCode ? err.statusCode :
+        err?.isJoi ? 422 :
+            500
     const source = err?.source ? err?.source : undefined
 
-    res.status(statusCode).json({
-        message: err.message,
+    res.status(statusCode).json({error: {
+        message,
         stack,
         source,
-    });
+    }});
 };

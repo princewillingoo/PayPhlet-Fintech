@@ -1,31 +1,19 @@
 import { Router } from "express";
-import expressAsyncHandler from "express-async-handler";
+
+import { userLoginController, userRegisterController, refreshTokenController } from "../controllers/auth.controller.js";
 
 const authRoutes = Router();
 
-authRoutes.post('/register', expressAsyncHandler(
-    async(req, res, next) => {
-        res.send('register route')
-    }
-))
+authRoutes.post('/register', userRegisterController)
+authRoutes.post('/login', userLoginController)
 
-authRoutes.post('/login', expressAsyncHandler(
-    async(req, res, next) => {
-        res.send('login route')
-    }
-))
+authRoutes.post('/refresh-token', refreshTokenController)
 
-authRoutes.post('/refresh-token', expressAsyncHandler(
-    async(req, res, next) => {
-        res.send('refresh token route')
-    }
-))
-
-authRoutes.delete('/logout', expressAsyncHandler(
-    async(req, res, next) => {
-        res.send('logout route')
-    }
-))
+// authRoutes.delete('/logout', expressAsyncHandler(
+//     async(req, res, next) => {
+//         res.send('logout route')
+//     }
+// ))
 
 
 export default authRoutes;
