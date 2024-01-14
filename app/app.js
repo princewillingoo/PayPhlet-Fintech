@@ -1,10 +1,12 @@
 import dotenv from 'dotenv'
 import express from 'express';
 import morgan from 'morgan';
+import expressAsyncHandler from 'express-async-handler';
 
 import { globalErrHandler, notFound } from '../middleware/errHandler.middleware.js';
 import authRoutes from '../routes/auth.route.js';
 import { isLoggedIn } from '../middleware/auth.middleware.js';
+import "../config/development/redisConfig.js";
 
 // environment variables
 dotenv.config()

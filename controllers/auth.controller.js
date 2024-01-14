@@ -2,9 +2,9 @@ import expressAsyncHandler from "express-async-handler";
 import createHttpError from 'http-errors';
 import { PrismaClient } from "@prisma/client";
 
-import { userRegisterSchema, userLoginSchema } from "../schemas/requestSchema/auth.schema.js";
-import { hashPassword, comparePasswords } from "../utils/auth.util.js"
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwt.util.js";
+import { userRegisterSchema, userLoginSchema } from "../schemas/auth.schema.js";
+import { hashPassword, comparePasswords } from "../utils/authUtil.js"
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwtUtil.js";
 
 const { BadRequest, Conflict, NotFound, Unauthorized } = createHttpError
 
@@ -100,11 +100,11 @@ const refreshTokenController = expressAsyncHandler(
         const userId = await verifyRefreshToken(token)
 
         const accessToken = await signAccessToken(userId)
-        // const refreshToken = await signRefreshToken(userId)
+        const refreshToken = await signRefreshToken(userId)
 
         res.status(200).json({
             accessToken,
-            // refreshToken
+            refreshToken
         })
     }
 )

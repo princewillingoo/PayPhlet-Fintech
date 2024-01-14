@@ -1,14 +1,18 @@
-import { verifyAccessToken } from "../utils/jwt.util.js"
+import { verifyAccessToken } from "../utils/jwtUtil.js"
+import createHttpError from 'http-errors';
 
-const isLoggedIn = async (req, res, next) => {
+const { Unauthorized } = createHttpError
 
-    try {
-        const payload = await verifyAccessToken(req);
-        req.payload = payload;
-        next()
-    } catch (error) {
-        throw  error
+const isLoggedIn = (req, res, next) => {
+
+    const payload = verifyAccessToken(req);
+
+    if (!payload) {
+        throw Unauthorized()
     }
+
+    req.payload = payload;
+    next()
 }
 
 export { isLoggedIn }
