@@ -29,8 +29,13 @@ const userLoginSchema = Joi.object({
 })
 
 
-// const refreshTokenSchema = Joi.object({
-//     token: Joi.string().alphanum().min(3).max(200).required()
-// })
+const resendOtpSchema = Joi.object({
+    email: Joi.string().email().lowercase().required(),
+})
 
-export { userRegisterSchema, userLoginSchema }
+const verifyEmailSchema = Joi.object({
+    email: Joi.string().email().lowercase().required(),
+    otp: Joi.string().length(6).pattern(/^[0-9]+$/).required(),
+})
+
+export { userRegisterSchema, userLoginSchema, resendOtpSchema, verifyEmailSchema}

@@ -2,9 +2,12 @@ import expressAsyncHandler from "express-async-handler";
 import createHttpError from 'http-errors';
 import { PrismaClient } from "@prisma/client";
 
-import { userRegisterSchema, userLoginSchema } from "../schemas/auth.schema.js";
-import { hashPassword, comparePasswords } from "../utils/authUtil.js"
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwtUtil.js";
+import { userRegisterSchema, userLoginSchema, resendOtpSchema, verifyEmailSchema } from "../schemas/auth.schema.js";
+import { hashPassword, comparePasswords, generateOTP } from "../utils/auth.util.js";
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwt.util.js";
+import { sendEmailToken } from "../services/email.service.js";
+import { client as redisClient } from "../config/development/redisConfig.js";
+
 
 const { BadRequest, Conflict, NotFound, Unauthorized } = createHttpError
 
@@ -41,12 +44,97 @@ const userRegisterController = expressAsyncHandler(
             }
         })
 
+        const OTP = generateOTP()
+        const redisResponse = await redisClient.set(user.email, OTP, { EX: 600 })
+        if (redisResponse !== 'OK') {
+            throw InternalServerError()
+        }
+
+        await sendEmailToken(OTP, user, "Email Verification")
+
         const accessToken = await signAccessToken(user.id)
         const refreshToken = await signRefreshToken(user.id)
 
         res.status(201).json({
             accessToken,
             refreshToken
+        })
+    }
+)
+
+const resendOtpController = expressAsyncHandler(
+    async (req, res) => {
+
+        const { email } = await resendOtpSchema.validateAsync(req.body)
+
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email,
+                isEmailVerified: false
+            }
+        })
+
+        if (!user) {
+            throw Unauthorized()
+        }
+
+        await redisClient.getDel(user.email)
+
+        const OTP = generateOTP()
+
+        const redisResponse = await redisClient.set(user.email, OTP, { EX: 1200 })
+        if (redisResponse !== 'OK') {
+            throw InternalServerError()
+        }
+
+        await sendEmailToken(OTP, user, "Email Verification")
+
+        res.status(200).json({
+            status: "success"
+        })
+    }
+)
+
+const verifyEmailController = expressAsyncHandler(
+    async (req, res) => {
+        const { email, otp } = await verifyEmailSchema.validateAsync(req.body)
+
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email,
+                isEmailVerified: false
+            }
+        })
+
+        if (!user) {
+            throw Unauthorized()
+        }
+
+        const redisResponse = await redisClient.getDel(user.email)
+
+        if (redisResponse === null || Number(redisResponse) !== Number(otp)) {
+            throw Unauthorized("Invalid and Expired OTP")
+        }
+
+        const updatadUser = await prisma.user.update({
+            where: {
+                email: user.email,
+            },
+            data: {
+                emailVerifiedAt: new Date(),
+                isEmailVerified: true
+            },
+            // select:{
+            //     email:true,
+            //     password: false ,
+            //     emailVerifiedAt: false,
+            //     rememberToken: false           
+            // }
+        })
+
+        res.status(200).json({
+            message: "Email verified successfully",
+            user: updatadUser
         })
     }
 )
@@ -90,7 +178,8 @@ const userLoginController = expressAsyncHandler(
 )
 
 const refreshTokenController = expressAsyncHandler(
-    async (req, res, next) => {
+    async (req, res) => {
+
         const { token } = req.body
 
         if (!token) {
@@ -109,4 +198,4 @@ const refreshTokenController = expressAsyncHandler(
     }
 )
 
-export { userRegisterController, userLoginController, refreshTokenController }
+export { userRegisterController, userLoginController, refreshTokenController, resendOtpController, verifyEmailController }

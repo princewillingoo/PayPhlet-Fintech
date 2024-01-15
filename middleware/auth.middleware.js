@@ -1,4 +1,4 @@
-import { verifyAccessToken } from "../utils/jwtUtil.js"
+import { verifyAccessToken } from "../utils/jwt.util.js";
 import createHttpError from 'http-errors';
 
 const { Unauthorized } = createHttpError

@@ -6,9 +6,9 @@ POST http://localhost:2024/auth/register
 Content-Type: application/json
 
 {
-    "email": "ben@gmail.com",
-    "name": "Ben Jason",
-    "password": "M5@TsHT~C9tM$gC"
+    "email": "email@gmail.com",
+    "name": "Princewill Inyang",
+    "password": "M5@TsHT~A9tM$gA"
 }
 
 ### LOG IN
@@ -16,10 +16,26 @@ POST http://localhost:2024/auth/login
 Content-Type: application/json
 
 {
-    "email": "ben@gmail.com",
-    "password": "M5@TsHT~C9tM$gC"
+    "email": "email@gmail.com",
+    "password": "M5@TsHT~A9tM$gA"
 }
 
+### VERIFY EMAIL
+POST http://localhost:2024/auth/verify-email
+Content-Type: application/json
+
+{
+    "email": "princewillingoo@gmail.com",
+    "otp": "264568"
+}
+
+### RESEND OTP
+POST http://localhost:2024/auth/resend-otp
+Content-Type: application/json
+
+{
+    "email": "princewillingoo@gmail.com"
+}
 
 ### REFRESH TOKEN
 POST http://localhost:2024/auth/refresh-token
