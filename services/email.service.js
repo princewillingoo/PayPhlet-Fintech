@@ -103,7 +103,7 @@ async function sendPasswordResetLink(emailToken, user, subject) {
       <div class="header">♾️ PayPhlet ♾️</div>
       <p class="info">Hello, ${user.name}! 👋</p>
       <p class="message">Use the following link to reset your password. Don't share link.</p>
-      <a href="${BASE_URL}/auth/reset-password?token=${emailToken}" class="otp">Click to reset</a>      
+      <a href="${BASE_URL}/auth/reset-password?token=${emailToken}" class="otp">Click To Reset Password</a>      
       <p class="info">Link expires soon! ⏳</p>
       <a href="${BASE_URL}/auth/reset-password?token=${emailToken}" class="link">${BASE_URL}/auth/reset-password?token=${emailToken}</a>
       <p class="footer">💱 Thank you for choosing PayPhlet. 💱</p>
