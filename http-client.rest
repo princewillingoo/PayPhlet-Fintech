@@ -45,5 +45,26 @@ Content-Type: application/json
     "token": ""
 }
 
+### FORGOT PASSWORD
+POST http://localhost:2024/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "princewillingoo@gmail.com"
+}
+
+### RESET PASSWORD
+GET http://localhost:2024/auth/reset-password?token=92f5ed4a-7ddb-4d6f-a7a6-221c6e747ed6
+
+### PASSWORD RESET
+POST http://localhost:2024/auth/password-reset
+Content-Type: application/json
+
+{
+    "token": "92f5ed4a-7ddb-4d6f-a7a6-221c6e747ed6",
+    "userId": "4c2b1af6-75bf-4a95-b783-ffe7f693ed8a",
+    "password": "M5@TsHT~A9tM$iJ"
+}
+
 ### LOG OUT
 DELETE http://localhost:2024/auth/logout
