@@ -217,4 +217,4 @@ async function sendEmailVerificationToken(emailToken, user, subject) {
   }
 }
 
-export { sendEmailVerificationToken, sendPasswordResetLink};
+export { sendEmailVerificationToken, sendPasswordResetLink };

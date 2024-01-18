@@ -1,14 +1,15 @@
 import { Router } from "express";
 
 import {
-    userLoginController,
-    userRegisterController,
-    refreshTokenController,
-    resendOtpController,
-    verifyEmailController,
-    forgotPasswordController,
-    resetPasswordController,
-    passwordResetController,
+  userLoginController,
+  userRegisterController,
+  refreshTokenController,
+  resendOtpController,
+  verifyEmailController,
+  forgotPasswordController,
+  resetPasswordController,
+  passwordResetController,
+  logoutController,
 } from "../controllers/auth.controller.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 
@@ -22,11 +23,6 @@ authRoutes.post("/refresh-token", refreshTokenController);
 authRoutes.post("/forgot-password", forgotPasswordController);
 authRoutes.get("/reset-password", resetPasswordController);
 authRoutes.post("/password-reset", passwordResetController);
-
-// authRoutes.delete('/logout', expressAsyncHandler(
-//     async(req, res, next) => {
-//         res.send('logout route')
-//     }
-// ))
+authRoutes.delete("/logout", logoutController);
 
 export default authRoutes;

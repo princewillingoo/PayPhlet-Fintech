@@ -14,9 +14,11 @@ export const globalErrHandler = (err, req, res, next) => {
             500
     const source = err?.source ? err?.source : undefined
 
-    res.status(statusCode).json({error: {
-        message,
-        stack,
-        source,
-    }});
+    res.status(statusCode).json({
+        error: {
+            message,
+            stack,
+            source,
+        }
+    });
 };
