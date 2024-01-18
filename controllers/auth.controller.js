@@ -296,7 +296,7 @@ const logoutController = expressAsyncHandler(async (req, res) => {
 
   const redisResponse = await redisClient.GETDEL(userId);
   if (redisResponse === null || redisResponse !== token) {
-    throw InternalServerError();
+    throw Unauthorized();
   }
 
   console.log(redisResponse);
