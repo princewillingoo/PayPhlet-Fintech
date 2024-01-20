@@ -15,13 +15,59 @@ model User {
   email           String    @unique
   name            String?
   password        String
-  phoneNumber     String
-  businessName    String?
-  businessAddress String?
-  companyEmail    String?
-  rememberToken   String?
-  isEmailVerified Boolean   @default(false)
-  emailVerifiedAt DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  phoneNumber     String    @map("phone_number")
+  businessName    String?   @map("business_name")
+  businessAddress String?   @map("business_address")
+  companyEmail    String?   @map("company_email")
+  rememberToken   String?   @map("remember_token")
+  isEmailVerified Boolean   @default(false) @map("is_email_verified")
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  Invoice         Invoice[]
+
+  @@map("users")
+}
+
+model Invoice {
+  id              Int           @id @default(autoincrement()) @map(name: "id")
+  customer        String?       @map(name: "customer")
+  invoiceDueDate  DateTime      @map(name: "invoice_due_date")
+  invoiceNote     String        @map(name: "invoice_note")
+  invoiceVat      Float         @map(name: "invoice_vat")
+  invoiceDiscount Float         @map(name: "invoice_discount")
+  paymentMethod   PaymentMethod @map(name: "payment_method")
+  invoiceNumber   String        @map(name: "invoice_number")
+  invoiceTotal    Float         @map(name: "invoice_total")
+  status          String        @map(name: "status")
+  createdAt       DateTime      @default(now()) @map(name: "created_at")
+  updatedAt       DateTime      @updatedAt @map(name: "updated_at")
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map(name: "user_id")
+
+  // payment           Payment? @relation(fields: [paymentId], references: [id])
+  // paymentId         Int?     @map(name: "payment_id")
+
+  items InvoiceItem[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          Int    @id @default(autoincrement()) @map(name: "id")
+  description String @map(name: "description")
+  quantity    Int    @map(name: "quantity")
+  unitCost    Float  @map(name: "unit_cost")
+
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId Int     @map(name: "invoice_id")
+
+  @@map("invoice_items")
+}
+
+enum PaymentMethod {
+  USSD
+  BANK_TRANSFER
+  CARD
 }
