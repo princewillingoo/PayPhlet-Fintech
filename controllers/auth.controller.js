@@ -34,7 +34,7 @@ const { BadRequest, Conflict, NotFound, Unauthorized, InternalServerError } =
 const prisma = new PrismaClient();
 
 const userRegisterController = expressAsyncHandler(async (req, res) => {
-  let { email, phone_number, password } = await userRegisterSchema.validateAsync(
+  let { email, phone_number, password, name } = await userRegisterSchema.validateAsync(
     req.body
   );
 
@@ -53,6 +53,7 @@ const userRegisterController = expressAsyncHandler(async (req, res) => {
   const user = await prisma.user.create({
     data: {
       email:email,
+      name: name,
       phoneNumber:phone_number,
       password:password,
     },

@@ -8,6 +8,7 @@ import {
   notFound,
 } from "../middleware/errHandler.middleware.js";
 import authRoutes from "../routes/auth.route.js";
+import invoiceRoutes from "../routes/invoice.route.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 import "../config/development/redisConfig.js";
 
@@ -27,6 +28,7 @@ app.get("/", isLoggedIn, async (req, res) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/invoices", invoiceRoutes)
 
 // err middleware
 app.use(notFound);

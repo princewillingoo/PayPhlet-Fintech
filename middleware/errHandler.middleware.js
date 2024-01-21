@@ -6,7 +6,7 @@ export const notFound = (req, res, next) => {
 
 export const globalErrHandler = (err, req, res, next) => {
 
-    // console.log(err)
+    console.log(err.message)
     const message = err.message;
     const stack = err?.stack;
     const statusCode = err?.statusCode ? err.statusCode :

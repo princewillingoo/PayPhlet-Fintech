@@ -13,7 +13,7 @@ datasource db {
 model User {
   id              String    @id @default(uuid())
   email           String    @unique
-  name            String?
+  name            String
   password        String
   phoneNumber     String    @map("phone_number")
   businessName    String?   @map("business_name")
@@ -30,8 +30,8 @@ model User {
 }
 
 model Invoice {
-  id              Int           @id @default(autoincrement()) @map(name: "id")
-  customer        String?       @map(name: "customer")
+  id              String        @id @default(uuid()) @map(name: "id")
+  customer        String        @map(name: "customer")
   invoiceDueDate  DateTime      @map(name: "invoice_due_date")
   invoiceNote     String        @map(name: "invoice_note")
   invoiceVat      Float         @map(name: "invoice_vat")
@@ -39,7 +39,7 @@ model Invoice {
   paymentMethod   PaymentMethod @map(name: "payment_method")
   invoiceNumber   String        @map(name: "invoice_number")
   invoiceTotal    Float         @map(name: "invoice_total")
-  status          String        @map(name: "status")
+  status          Status        @map(name: "status")
   createdAt       DateTime      @default(now()) @map(name: "created_at")
   updatedAt       DateTime      @updatedAt @map(name: "updated_at")
 
@@ -49,19 +49,19 @@ model Invoice {
   // payment           Payment? @relation(fields: [paymentId], references: [id])
   // paymentId         Int?     @map(name: "payment_id")
 
-  items InvoiceItem[]
+  invoiceItems InvoiceItem[]
 
   @@map("invoices")
 }
 
 model InvoiceItem {
-  id          Int    @id @default(autoincrement()) @map(name: "id")
+  id          String @id @default(uuid()) @map(name: "id")
   description String @map(name: "description")
   quantity    Int    @map(name: "quantity")
   unitCost    Float  @map(name: "unit_cost")
 
   invoice   Invoice @relation(fields: [invoiceId], references: [id])
-  invoiceId Int     @map(name: "invoice_id")
+  invoiceId String  @map(name: "invoice_id")
 
   @@map("invoice_items")
 }
@@ -70,4 +70,9 @@ enum PaymentMethod {
   USSD
   BANK_TRANSFER
   CARD
+}
+
+enum Status {
+  DRAFT
+  SENT
 }

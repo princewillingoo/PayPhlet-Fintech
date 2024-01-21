@@ -7,6 +7,7 @@ const joiPassword = Joi.extend(joiPasswordExtendCore);
 
 const userRegisterSchema = Joi.object({
   email: Joi.string().email().lowercase().required(),
+  name: Joi.string().required(),
   phone_number: joiPhoneNumber
     .string()
     .phoneNumber({ defaultCountry: "NG", format: "international" }),
