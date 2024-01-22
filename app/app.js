@@ -4,8 +4,8 @@ import morgan from "morgan";
 import expressAsyncHandler from "express-async-handler";
 
 import {
-  globalErrHandler,
-  notFound,
+    globalErrHandler,
+    notFound,
 } from "../middleware/errHandler.middleware.js";
 import authRoutes from "../routes/auth.route.js";
 import invoiceRoutes from "../routes/invoice.route.js";
@@ -22,13 +22,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", isLoggedIn, async (req, res) => {
-  res.json({
-    message: "Hello, I'm building a 500 fourtune comapny. Stay tuned.",
-  });
+    res.json({
+        message: "Hello, I'm building a 500 fourtune comapny. Stay tuned.",
+    });
 });
 
 app.use("/auth", authRoutes);
-app.use("/invoices", invoiceRoutes)
+app.use("/invoices", invoiceRoutes);
 
 // err middleware
 app.use(notFound);

@@ -9,7 +9,7 @@ await client.connect();
 await client.set("status", "connected", { EX: 10 });
 
 process.on("SIGINT", async () => {
-  await client.disconnect();
+    await client.disconnect();
 });
 
 export { client };

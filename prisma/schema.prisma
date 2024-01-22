@@ -30,18 +30,18 @@ model User {
 }
 
 model Invoice {
-  id              String        @id @default(uuid()) @map(name: "id")
-  customer        String        @map(name: "customer")
-  invoiceDueDate  DateTime      @map(name: "invoice_due_date")
-  invoiceNote     String        @map(name: "invoice_note")
-  invoiceVat      Float         @map(name: "invoice_vat")
-  invoiceDiscount Float         @map(name: "invoice_discount")
-  paymentMethod   PaymentMethod @map(name: "payment_method")
-  invoiceNumber   String        @map(name: "invoice_number")
-  invoiceTotal    Float         @map(name: "invoice_total")
-  status          Status        @map(name: "status")
-  createdAt       DateTime      @default(now()) @map(name: "created_at")
-  updatedAt       DateTime      @updatedAt @map(name: "updated_at")
+  id              String         @id @default(uuid()) @map(name: "id")
+  customer        String         @map(name: "customer")
+  invoiceDueDate  DateTime       @map(name: "invoice_due_date")
+  invoiceNote     String         @map(name: "invoice_note")
+  invoiceVat      Float          @map(name: "invoice_vat")
+  invoiceDiscount Float          @map(name: "invoice_discount")
+  paymentMethod   PaymentMethod? @map(name: "payment_method")
+  invoiceNumber   String         @map(name: "invoice_number")
+  invoiceTotal    Float          @map(name: "invoice_total")
+  status          Status         @map(name: "status")
+  createdAt       DateTime       @default(now()) @map(name: "created_at")
+  updatedAt       DateTime       @updatedAt @map(name: "updated_at")
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @map(name: "user_id")
@@ -75,4 +75,6 @@ enum PaymentMethod {
 enum Status {
   DRAFT
   SENT
+  PAID
+  PENDING
 }

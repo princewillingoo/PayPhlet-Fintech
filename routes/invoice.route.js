@@ -1,9 +1,9 @@
 import { Router } from "express";
 
 import {
-  getInvoices,
-  getInvoice,
-  createInvoice,
+    getInvoices,
+    getInvoice,
+    createInvoice,
 } from "../controllers/invoice.controller.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 

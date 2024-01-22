@@ -6,26 +6,26 @@ const { InternalServerError } = createHttpError;
 const BASE_URL = "http://localhost:2024";
 
 async function mailSender(email, title, body) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS,
+        },
+    });
 
-  const info = await transporter.sendMail({
-    from: "Prince from PayPhlet <princewilling10@gmail.com>",
-    to: email,
-    subject: title,
-    html: body,
-  });
+    const info = await transporter.sendMail({
+        from: "Prince from PayPhlet <princewilling10@gmail.com>",
+        to: email,
+        subject: title,
+        html: body,
+    });
 
-  return info;
+    return info;
 }
 
 async function sendPasswordResetLink(emailToken, user, subject) {
-  const emailBody = `
+    const emailBody = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -112,17 +112,17 @@ async function sendPasswordResetLink(emailToken, user, subject) {
   </html>   
   `;
 
-  try {
-    const mailResponse = await mailSender(user.email, subject, emailBody);
-    // console.log('Email sent successfully:', mailResponse);
-  } catch (e) {
-    console.log("Error sending email", e);
-    throw InternalServerError();
-  }
+    try {
+        const mailResponse = await mailSender(user.email, subject, emailBody);
+        // console.log('Email sent successfully:', mailResponse);
+    } catch (e) {
+        console.log("Error sending email", e);
+        throw InternalServerError();
+    }
 }
 
 async function sendEmailVerificationToken(emailToken, user, subject) {
-  const emailBody = `
+    const emailBody = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -208,13 +208,13 @@ async function sendEmailVerificationToken(emailToken, user, subject) {
   </html>   
   `;
 
-  try {
-    const mailResponse = await mailSender(user.email, subject, emailBody);
-    // console.log('Email sent successfully:', mailResponse);
-  } catch (e) {
-    console.log("Error sending email", e);
-    throw InternalServerError();
-  }
+    try {
+        const mailResponse = await mailSender(user.email, subject, emailBody);
+        // console.log('Email sent successfully:', mailResponse);
+    } catch (e) {
+        console.log("Error sending email", e);
+        throw InternalServerError();
+    }
 }
 
 export { sendEmailVerificationToken, sendPasswordResetLink };
