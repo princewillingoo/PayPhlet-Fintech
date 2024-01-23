@@ -7,10 +7,14 @@ const getInvoiceSchema = Joi.object({
 const createInvoiceSchema = Joi.object({
     customer: Joi.string().email().required(),
     invoiceDueDate: Joi.date().required(),
-    invoiceNote: Joi.string().min(10).max(100).required(),
     invoiceVat: Joi.number().default(0.0),
     invoiceDiscount: Joi.number().default(0.0),
-    // status: Joi.string().valid('DRAFT', 'SENT', 'SEND'),
+    invoiceSubject: Joi.string().min(10).max(100).required(),
+    invoiceNote: Joi.string()
+        .min(10)
+        .max(100)
+        .default("Thanks for your patronage")
+        .required(),
     invoiceTotal: Joi.number().required(),
 
     invoiceItems: Joi.array().items({

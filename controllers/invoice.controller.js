@@ -47,6 +47,7 @@ const createInvoice = expressAsyncHandler(async (req, res) => {
     const {
         customer,
         invoiceDueDate,
+        invoiceSubject,
         invoiceNote,
         invoiceVat,
         invoiceDiscount,
@@ -67,6 +68,7 @@ const createInvoice = expressAsyncHandler(async (req, res) => {
             customer,
             invoiceDueDate,
             invoiceNote,
+            invoiceSubject,
             invoiceVat,
             invoiceDiscount,
 

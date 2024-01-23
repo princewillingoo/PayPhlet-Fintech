@@ -7,7 +7,7 @@ const joiPassword = Joi.extend(joiPasswordExtendCore);
 
 const userRegisterSchema = Joi.object({
     email: Joi.string().email().lowercase().required(),
-    name: Joi.string().required(),
+    name: Joi.string().pattern(new RegExp('^[A-Za-z]+\s[A-Za-z]+$')).required(),
     phone_number: joiPhoneNumber
         .string()
         .phoneNumber({ defaultCountry: "NG", format: "international" }),
@@ -42,7 +42,7 @@ const verifyEmailSchema = Joi.object({
     email: Joi.string().email().lowercase().required(),
     otp: Joi.string()
         .length(6)
-        .pattern(/^[0-9]+$/)
+        .pattern(new RegExp("^[0-9]+$"))
         .required(),
 });
 
