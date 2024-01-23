@@ -32,7 +32,7 @@ model User {
 model Invoice {
   id              String         @id @default(uuid()) @map(name: "id")
   customer        String         @map(name: "customer")
-  invoiceDueDate  DateTime?      @map(name: "invoice_due_date")
+  invoiceDueDate  DateTime       @map(name: "invoice_due_date")
   invoiceSubject  String         @map(name: "invoice_subject")
   invoiceNote     String?        @map(name: "invoice_note")
   invoiceVat      Float?         @map(name: "invoice_vat")
