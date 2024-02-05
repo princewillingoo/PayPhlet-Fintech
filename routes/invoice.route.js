@@ -1,16 +1,18 @@
 import { Router } from "express";
 
 import {
-    getInvoices,
-    getInvoice,
-    createInvoice,
+    getInvoicesCtrl,
+    getInvoiceCtrl,
+    createInvoiceCtrl,
+    sendInvoiceCtrl
 } from "../controllers/invoice.controller.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 
 const invoiceRoutes = Router();
 
-invoiceRoutes.get("/", isLoggedIn, getInvoices);
-invoiceRoutes.get("/:invoiceId", isLoggedIn, getInvoice);
-invoiceRoutes.post("/create", isLoggedIn, createInvoice);
+invoiceRoutes.get("/", isLoggedIn, getInvoicesCtrl);
+invoiceRoutes.get("/:invoiceId", isLoggedIn, getInvoiceCtrl);
+invoiceRoutes.post("/create", isLoggedIn, createInvoiceCtrl);
+invoiceRoutes.get("/:invoiceId/send/:customerId", isLoggedIn, sendInvoiceCtrl);
 
 export default invoiceRoutes;

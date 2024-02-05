@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
-import expressAsyncHandler from "express-async-handler";
 
 import {
     globalErrHandler,
@@ -21,10 +20,11 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", isLoggedIn, async (req, res) => {
-    res.json({
-        message: "Hello, I'm building a 500 fourtune comapny. Stay tuned.",
-    });
+app.set('views', './templates')
+app.set('view engine', 'ejs');
+
+app.get("/", async (req, res) => {
+    res.render('index')
 });
 
 app.use("/auth", authRoutes);

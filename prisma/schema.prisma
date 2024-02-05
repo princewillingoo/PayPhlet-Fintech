@@ -11,27 +11,39 @@ datasource db {
 }
 
 model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
+  id              String     @id @default(uuid())
+  email           String     @unique
   name            String
   password        String
-  phoneNumber     String    @map("phone_number")
-  businessName    String?   @map("business_name")
-  businessAddress String?   @map("business_address")
-  companyEmail    String?   @map("company_email")
-  rememberToken   String?   @map("remember_token")
-  isEmailVerified Boolean   @default(false) @map("is_email_verified")
-  emailVerifiedAt DateTime? @map("email_verified_at")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  phoneNumber     String     @map("phone_number")
+  businessName    String?    @map("business_name")
+  businessAddress String?    @map("business_address")
+  companyEmail    String?    @map("company_email")
+  rememberToken   String?    @map("remember_token")
+  isEmailVerified Boolean    @default(false) @map("is_email_verified")
+  emailVerifiedAt DateTime?  @map("email_verified_at")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
   Invoice         Invoice[]
+  Customer        Customer[]
 
   @@map("users")
 }
 
+model Customer {
+  id      String    @id @default(uuid())
+  email   String    @unique
+  note    String?
+  Invoice Invoice[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map(name: "user_id")
+
+  @@map("customers")
+}
+
 model Invoice {
   id              String         @id @default(uuid()) @map(name: "id")
-  customer        String         @map(name: "customer")
   invoiceDueDate  DateTime       @map(name: "invoice_due_date")
   invoiceSubject  String         @map(name: "invoice_subject")
   invoiceNote     String?        @map(name: "invoice_note")
@@ -46,6 +58,9 @@ model Invoice {
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @map(name: "user_id")
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String   @map(name: "customer_id")
 
   // payment           Payment? @relation(fields: [paymentId], references: [id])
   // paymentId         Int?     @map(name: "payment_id")

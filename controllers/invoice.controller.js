@@ -2,20 +2,25 @@ import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import { PrismaClient } from "@prisma/client";
 import generateUniqueId from "generate-unique-id";
-
 import {
     createInvoiceSchema,
     getInvoiceSchema,
+    sendInvoiceSchema,
 } from "../schemas/invoice.schema.js";
+import { generateInvoicePDF } from "../utils/invoice.util.js";
 
 const { NotFound } = createHttpError;
 
 const prisma = new PrismaClient();
 
-const getInvoices = expressAsyncHandler(async (req, res) => {
+const getInvoicesCtrl = expressAsyncHandler(async (req, res) => {
     const invoices = await prisma.invoice.findMany({
         where: {
-            userId: req.payload.id,
+            user: {
+                is: {
+                    id: req.payload.id
+                }
+            }
         },
     });
 
@@ -24,7 +29,7 @@ const getInvoices = expressAsyncHandler(async (req, res) => {
     });
 });
 
-const getInvoice = expressAsyncHandler(async (req, res) => {
+const getInvoiceCtrl = expressAsyncHandler(async (req, res) => {
     const { invoiceId } = await getInvoiceSchema.validateAsync(req.params);
 
     const invoice = await prisma.invoice.findUnique({
@@ -43,9 +48,9 @@ const getInvoice = expressAsyncHandler(async (req, res) => {
     });
 });
 
-const createInvoice = expressAsyncHandler(async (req, res) => {
+const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
     const {
-        customer,
+        customerEmail,
         invoiceDueDate,
         invoiceSubject,
         invoiceNote,
@@ -63,9 +68,22 @@ const createInvoice = expressAsyncHandler(async (req, res) => {
         useNumbers: true,
     });
 
+    // if customer does not exist and create
+    let customer = await prisma.customer.findUnique({
+        where: {
+            email: customerEmail,
+        },
+    });
+    if (!customer) {
+        customer = await prisma.customer.create({
+            data: { email: customerEmail, userId: userId },
+        });
+    }
+    const customerId = customer.id;
+
     const invoice = await prisma.invoice.create({
         data: {
-            customer,
+            customerId,
             invoiceDueDate,
             invoiceNote,
             invoiceSubject,
@@ -84,14 +102,47 @@ const createInvoice = expressAsyncHandler(async (req, res) => {
 
         include: {
             invoiceItems: true,
+            customer: true,
         },
     });
 
-    console.log(invoice);
+    // console.log(invoice);
 
-    //   await generatePDF(invoice);
+    await generateInvoicePDF(invoice);
 
-    //   res.status(200).send("Server Error");
+    res.status(201).json({
+        // message: "Invoice created succesfully",
+        invoice: invoice,
+    });
 });
 
-export { getInvoices, getInvoice, createInvoice };
+const sendInvoiceCtrl = expressAsyncHandler(async (req, res) => {
+    const { invoiceId, customerId } = await sendInvoiceSchema.validateAsync(
+        req.params
+    );
+    const userId = req.payload.id;
+
+    const invoice = await prisma.invoice.findFirst({
+        where: {
+            id: invoiceId,
+            customerId: customerId,
+            userId: userId,
+        },
+
+        include: {
+            customer: true,
+        },
+    });
+
+    if (!invoice) {
+        throw NotFound();
+    }
+
+    // update invoice status after sending
+
+    res.status(200).json({
+        message: `Invoice sent to ${invoice.customer.email}`,
+    });
+});
+
+export { getInvoicesCtrl, getInvoiceCtrl, createInvoiceCtrl, sendInvoiceCtrl };

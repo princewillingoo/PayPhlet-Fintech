@@ -17,7 +17,7 @@ const signAccessToken = (id) => {
     return new Promise((resolve, reject) => {
         const secretKey = process.env.ACCESS_TOKEN_SECRET;
         const options = {
-            expiresIn: "24h",
+            expiresIn: "30 days",
             issuer: "payphelt.com",
             audience: id,
         };
@@ -55,7 +55,7 @@ const signRefreshToken = (id) => {
     return new Promise((resolve, reject) => {
         const secretKey = process.env.REFRESH_TOKEN_SECRET;
         const options = {
-            expiresIn: "5 days",
+            expiresIn: "60 days",
             issuer: "payphelt.com",
             audience: id,
         };

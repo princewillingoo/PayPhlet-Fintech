@@ -5,7 +5,7 @@ const getInvoiceSchema = Joi.object({
 });
 
 const createInvoiceSchema = Joi.object({
-    customer: Joi.string().email().required(),
+    customerEmail: Joi.string().email().required(),
     invoiceDueDate: Joi.date().required(),
     invoiceVat: Joi.number().default(0.0),
     invoiceDiscount: Joi.number().default(0.0),
@@ -24,4 +24,9 @@ const createInvoiceSchema = Joi.object({
     }),
 });
 
-export { getInvoiceSchema, createInvoiceSchema };
+const sendInvoiceSchema = Joi.object({
+    invoiceId: Joi.string().uuid().required(),
+    customerId: Joi.string().uuid().required(),
+});
+
+export { getInvoiceSchema, createInvoiceSchema, sendInvoiceSchema };

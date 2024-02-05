@@ -6,26 +6,32 @@ const { InternalServerError } = createHttpError;
 const BASE_URL = "http://localhost:2024";
 
 async function mailSender(email, title, body) {
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS,
-        },
-    });
+  const transporter = nodemailer.createTransport({
+    // service: "gmail",
+    // auth: {
+    //     user: process.env.MAIL_USER,
+    //     pass: process.env.MAIL_PASS,
+    // },
+    host: process.env.MAIL_HOST_MAILTRAP,
+    port: process.env.MAIL_PORT_MAILTRAP,
+    auth: {
+      user: process.env.MAIL_USER_MAILTRAP,
+      pass: process.env.MAIL_PASS_MAILTRAP
+    }
+  });
 
-    const info = await transporter.sendMail({
-        from: "Prince from PayPhlet <princewilling10@gmail.com>",
-        to: email,
-        subject: title,
-        html: body,
-    });
+  const info = await transporter.sendMail({
+    from: "Prince Inyang from PayPhlet",
+    to: email,
+    subject: title,
+    html: body,
+  });
 
-    return info;
+  return info;
 }
 
 async function sendPasswordResetLink(emailToken, user, subject) {
-    const emailBody = `
+  const emailBody = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -112,17 +118,17 @@ async function sendPasswordResetLink(emailToken, user, subject) {
   </html>   
   `;
 
-    try {
-        const mailResponse = await mailSender(user.email, subject, emailBody);
-        // console.log('Email sent successfully:', mailResponse);
-    } catch (e) {
-        console.log("Error sending email", e);
-        throw InternalServerError();
-    }
+  try {
+    const mailResponse = await mailSender(user.email, subject, emailBody);
+    // console.log('Email sent successfully:', mailResponse);
+  } catch (e) {
+    console.log("Error sending email", e);
+    throw InternalServerError();
+  }
 }
 
 async function sendEmailVerificationToken(emailToken, user, subject) {
-    const emailBody = `
+  const emailBody = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -199,7 +205,8 @@ async function sendEmailVerificationToken(emailToken, user, subject) {
     <div class="container">
       <div class="header">♾️ PayPhlet ♾️</div>
       <p class="info">Hello, ${user.name}! 👋</p>
-      <p class="message">Use one-time password (OTP) below to verify your email and complete your signup to PayPhlet. Don't share your OTP</p>
+      <p class="message">Use the one-time password (OTP) below to verify your email and finish signing up to PayPhlet.</p> 
+      <p class="message"> <strong>Note: </strong>Don't share your OTP</p>
       <a href="#" class="otp">${emailToken}</a>
       <p class="info">OTP expires soon! ⏳</p>
       <p class="footer">💱 Thank you for choosing PayPhlet. 💱</p>
@@ -208,13 +215,13 @@ async function sendEmailVerificationToken(emailToken, user, subject) {
   </html>   
   `;
 
-    try {
-        const mailResponse = await mailSender(user.email, subject, emailBody);
-        // console.log('Email sent successfully:', mailResponse);
-    } catch (e) {
-        console.log("Error sending email", e);
-        throw InternalServerError();
-    }
+  try {
+    const mailResponse = await mailSender(user.email, subject, emailBody);
+    // console.log('Email sent successfully:', mailResponse);
+  } catch (e) {
+    console.log("Error sending email", e);
+    throw InternalServerError();
+  }
 }
 
 export { sendEmailVerificationToken, sendPasswordResetLink };
