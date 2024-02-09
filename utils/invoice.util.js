@@ -17,7 +17,7 @@ const currentModuleUrl = import.meta.url;
 const currentModuleDir = dirname(fileURLToPath(currentModuleUrl));
 const baseParentWorkingDir = path.resolve(currentModuleDir, "..");
 
-const invoiceTemplatesDir = "templates/invoices";
+const invoiceTemplatesDir = "templates/emails/invoices";
 const inputFilePath = path.join(
     baseParentWorkingDir,
     invoiceTemplatesDir,
