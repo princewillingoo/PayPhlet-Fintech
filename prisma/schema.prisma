@@ -31,9 +31,16 @@ model User {
 }
 
 model Customer {
-  id      String    @id @default(uuid())
-  email   String    @unique
-  note    String?
+  id           String  @id @default(uuid())
+  email        String  @unique
+  phoneNumber  String? @map("phone_number")
+  AddressLine1 String? @map("address_line1")
+  AddressLine2 String? @map("address_line2")
+  city         String?
+  State        String?
+  country      String?
+  notes        String?
+
   Invoice Invoice[]
 
   user   User   @relation(fields: [userId], references: [id])
@@ -76,7 +83,7 @@ model InvoiceItem {
   quantity    Int    @map(name: "quantity")
   unitCost    Float  @map(name: "unit_cost")
 
-  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId String  @map(name: "invoice_id")
 
   @@map("invoice_items")

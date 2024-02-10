@@ -29,4 +29,13 @@ const sendInvoiceSchema = Joi.object({
     customerId: Joi.string().uuid().required(),
 });
 
-export { getInvoiceSchema, createInvoiceSchema, sendInvoiceSchema };
+const deleteInvoiceSchema = Joi.object({
+    invoiceId: Joi.string().uuid().required(),
+});
+
+export {
+    getInvoiceSchema,
+    createInvoiceSchema,
+    sendInvoiceSchema,
+    deleteInvoiceSchema,
+};

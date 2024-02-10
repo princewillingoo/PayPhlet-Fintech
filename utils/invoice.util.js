@@ -1,12 +1,13 @@
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
-
 import axios from "axios";
 import fs from "fs";
 import FormData from "form-data";
+import { Readable } from "stream";
 
 import createHttpError from "http-errors";
+import { renderFile } from "ejs";
 
 const { InternalServerError } = createHttpError;
 
@@ -18,16 +19,34 @@ const currentModuleDir = dirname(fileURLToPath(currentModuleUrl));
 const baseParentWorkingDir = path.resolve(currentModuleDir, "..");
 
 const invoiceTemplatesDir = "templates/emails/invoices";
-const inputFilePath = path.join(
-    baseParentWorkingDir,
-    invoiceTemplatesDir,
-    "generate.html"
-);
+
+function stringReadStream(str) {
+    const stream = new Readable();
+    stream.push(str);
+    stream.push(null);
+    return stream;
+}
 
 async function generateInvoicePDF(invoice) {
+    let htmlStr = undefined;
+
+    const templateFilePath = path.join(
+        baseParentWorkingDir,
+        invoiceTemplatesDir,
+        "generateInvoice.ejs"
+    );
+
+    renderFile(templateFilePath, {}, {}, function (err, str) {
+        if (err) {
+            throw InternalServerError();
+        }
+
+        htmlStr = str;
+    });
+    // console.log(htmlStr)
     try {
         const formData = new FormData();
-        formData.append("files", fs.createReadStream(inputFilePath), { filename: "index.html" });
+        formData.append("files", stringReadStream(htmlStr), { filename: "index.html" });
 
         const response = await axios.post(
             process.env.PDF_GENERATION_API,
@@ -40,8 +59,6 @@ async function generateInvoicePDF(invoice) {
             }
         );
 
-        // Get the current timestamp in milliseconds
-        // const timestamp = Date.now();
         const outputFilePath = path.join(
             baseParentWorkingDir,
             "data/invoices",
@@ -58,8 +75,8 @@ async function generateInvoicePDF(invoice) {
 
         // console.log(`File saved as ${outputFilePath}`);
     } catch (error) {
-        // console.error("Error:", error || error.message);
-        throw error
+        console.error("Error:", error || error.message);
+        throw InternalServerError();
     }
 }
 

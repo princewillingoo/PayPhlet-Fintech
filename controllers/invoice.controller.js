@@ -4,10 +4,12 @@ import { PrismaClient } from "@prisma/client";
 import generateUniqueId from "generate-unique-id";
 import {
     createInvoiceSchema,
+    deleteInvoiceSchema,
     getInvoiceSchema,
     sendInvoiceSchema,
 } from "../schemas/invoice.schema.js";
 import { generateInvoicePDF } from "../utils/invoice.util.js";
+import { sendInvoice } from "../services/email.service.js";
 
 const { NotFound } = createHttpError;
 
@@ -18,9 +20,9 @@ const getInvoicesCtrl = expressAsyncHandler(async (req, res) => {
         where: {
             user: {
                 is: {
-                    id: req.payload.id
-                }
-            }
+                    id: req.payload.id,
+                },
+            },
         },
     });
 
@@ -117,9 +119,10 @@ const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const sendInvoiceCtrl = expressAsyncHandler(async (req, res) => {
-    const { invoiceId, customerId } = await sendInvoiceSchema.validateAsync(
-        req.params
-    );
+    const { invoiceId, customerId } = await sendInvoiceSchema.validateAsync({
+        ...req.params,
+        ...req.body,
+    });
     const userId = req.payload.id;
 
     const invoice = await prisma.invoice.findFirst({
@@ -131,6 +134,7 @@ const sendInvoiceCtrl = expressAsyncHandler(async (req, res) => {
 
         include: {
             customer: true,
+            user: true,
         },
     });
 
@@ -138,11 +142,48 @@ const sendInvoiceCtrl = expressAsyncHandler(async (req, res) => {
         throw NotFound();
     }
 
+    await sendInvoice(invoice, "Invoice! Invoice! Invoice!");
+
     // update invoice status after sending
+    const updateInvoice = await prisma.invoice.update({
+        where: {
+            id: invoice.id,
+        },
+        data: {
+            status: "SENT",
+        },
+    });
 
     res.status(200).json({
+        invoice: updateInvoice,
         message: `Invoice sent to ${invoice.customer.email}`,
     });
 });
 
-export { getInvoicesCtrl, getInvoiceCtrl, createInvoiceCtrl, sendInvoiceCtrl };
+const deleteInvoiceCtrl = expressAsyncHandler(async (req, res) => {
+    const { invoiceId } = await deleteInvoiceSchema.validateAsync(req.params);
+
+    try {
+        await prisma.invoice.delete({
+            where: {
+                id: invoiceId,
+                userId: req.payload.id,
+            },
+        });
+
+        // await deleteGeneratedPDF(invoice);
+    } catch (e) {
+        console.log(e.message);
+        throw NotFound();
+    }
+
+    res.status(204).json({});
+});
+
+export {
+    getInvoicesCtrl,
+    getInvoiceCtrl,
+    createInvoiceCtrl,
+    sendInvoiceCtrl,
+    deleteInvoiceCtrl,
+};
