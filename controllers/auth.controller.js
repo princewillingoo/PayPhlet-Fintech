@@ -164,12 +164,12 @@ const resendOtpController = expressAsyncHandler(async (req, res) => {
 
     const user = await prisma.user.findFirst({
         where: {
-            email: email,
+            id: req.payload.id,
             isEmailVerified: false,
         },
     });
 
-    if (!user) {
+    if (!user || user.email !== email) {
         throw Unauthorized();
     }
 

@@ -5,7 +5,7 @@ export const notFound = (req, res, next) => {
 };
 
 export const globalErrHandler = (err, req, res, next) => {
-    console.log(err, err?.isJoi);
+    // console.log(err, err?.isJoi);
     const message = err.message;
     const stack = err?.stack;
     const statusCode = err?.statusCode
