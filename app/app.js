@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
-import expressAsyncHandler from "express-async-handler";
 
 import {
-  globalErrHandler,
-  notFound,
+    globalErrHandler,
+    notFound,
 } from "../middleware/errHandler.middleware.js";
 import authRoutes from "../routes/auth.route.js";
+import invoiceRoutes from "../routes/invoice.route.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 import "../config/development/redisConfig.js";
 
@@ -20,13 +20,15 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", isLoggedIn, async (req, res) => {
-  res.json({
-    message: "Hello, I'm building a 500 fourtune comapny. Stay tuned.",
-  });
+app.set('views', './templates')
+app.set('view engine', 'ejs');
+
+app.get("/", async (req, res) => {
+    res.render('index')
 });
 
 app.use("/auth", authRoutes);
+app.use("/invoices", invoiceRoutes);
 
 // err middleware
 app.use(notFound);

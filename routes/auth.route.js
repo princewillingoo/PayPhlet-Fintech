@@ -1,15 +1,15 @@
 import { Router } from "express";
 
 import {
-  userLoginController,
-  userRegisterController,
-  refreshTokenController,
-  resendOtpController,
-  verifyEmailController,
-  forgotPasswordController,
-  resetPasswordController,
-  passwordResetController,
-  logoutController,
+    userLoginController,
+    userRegisterController,
+    refreshTokenController,
+    resendOtpController,
+    verifyEmailController,
+    forgotPasswordController,
+    resetPasswordController,
+    passwordResetController,
+    logoutController,
 } from "../controllers/auth.controller.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 
