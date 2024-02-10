@@ -7,11 +7,12 @@ import {
     deleteInvoiceSchema,
     getInvoiceSchema,
     sendInvoiceSchema,
+    updateInvoiceSchema,
 } from "../schemas/invoice.schema.js";
 import { generateInvoicePDF } from "../utils/invoice.util.js";
 import { sendInvoice } from "../services/email.service.js";
 
-const { NotFound } = createHttpError;
+const { NotFound, BadRequest } = createHttpError;
 
 const prisma = new PrismaClient();
 
@@ -70,10 +71,11 @@ const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
         useNumbers: true,
     });
 
-    // if customer does not exist and create
-    let customer = await prisma.customer.findUnique({
+    // if customer does not exist then create
+    let customer = await prisma.customer.findFirst({
         where: {
             email: customerEmail,
+            userId: userId,
         },
     });
     if (!customer) {
@@ -180,10 +182,73 @@ const deleteInvoiceCtrl = expressAsyncHandler(async (req, res) => {
     res.status(204).json({});
 });
 
+const updateInvoiceCtrl = expressAsyncHandler(async (req, res) => {
+    const {
+        invoiceId,
+
+        customerEmail,
+        invoiceDueDate,
+        invoiceSubject,
+        invoiceNote,
+        invoiceVat,
+        invoiceDiscount,
+        invoiceTotal,
+        invoiceItems,
+    } = await updateInvoiceSchema.validateAsync({ ...req.body, ...req.params });
+
+    let customer = await prisma.customer.findFirst({
+        where: {
+            email: customerEmail,
+            userId: req.payload.id,
+        },
+    });
+    if (!customer) {
+        throw NotFound("Customer Does Not Exists");
+    }
+    const customerId = customer.id;
+
+    const invoice = await prisma.invoice.update({
+        where: {
+            id: invoiceId,
+            userId: req.payload.id,
+            status: "DRAFT",
+        },
+
+        data: {
+            customerId,
+            invoiceDueDate,
+            invoiceNote,
+            invoiceSubject,
+            invoiceVat,
+            invoiceDiscount,
+            invoiceTotal,
+
+            invoiceItems: {
+                create: invoiceItems,
+            },
+        },
+
+        include: {
+            invoiceItems: true,
+            customer: true,
+        },
+    });
+
+    if (!invoice) {
+        throw BadRequest();
+    }
+
+    res.status(200).json({
+        // message: "Invoice created succesfully",
+        invoice: invoice,
+    });
+});
+
 export {
     getInvoicesCtrl,
     getInvoiceCtrl,
     createInvoiceCtrl,
     sendInvoiceCtrl,
     deleteInvoiceCtrl,
+    updateInvoiceCtrl,
 };
