@@ -64,7 +64,6 @@ const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
     });
 
     invoiceData = await calculateInvoiceTotalsAsync(invoiceData);
-    console.log(invoiceData);
 
     // if customer does not exist then create
     let customer = await prisma.customer.findFirst({
@@ -102,9 +101,7 @@ const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
         },
     });
 
-    console.log(invoice);
-
-    await generateInvoicePDF(invoice);
+    // await generateInvoicePDF(invoice);
 
     res.status(201).json({
         // message: "Invoice created succesfully",
@@ -175,48 +172,59 @@ const deleteInvoiceCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const updateInvoiceCtrl = expressAsyncHandler(async (req, res) => {
-    const {
-        invoiceId,
+    let invoiceData = await updateInvoiceSchema.validateAsync({
+        ...req.body,
+        ...req.params,
+    });
 
-        customerEmail,
-        invoiceDueDate,
-        invoiceSubject,
-        invoiceNote,
-        invoiceVat,
-        invoiceDiscount,
-        invoiceTotal,
-        invoiceItems,
-    } = await updateInvoiceSchema.validateAsync({ ...req.body, ...req.params });
+    invoiceData = await calculateInvoiceTotalsAsync(invoiceData);
 
     let customer = await prisma.customer.findFirst({
         where: {
-            email: customerEmail,
+            email: invoiceData.customerEmail,
             userId: req.payload.id,
         },
     });
     if (!customer) {
         throw NotFound("Customer Does Not Exists");
     }
-    const customerId = customer.id;
 
     const invoice = await prisma.invoice.update({
         where: {
-            id: invoiceId,
+            id: invoiceData.invoiceId,
             userId: req.payload.id,
             status: "DRAFT",
         },
 
         data: {
-            customerId,
-            invoiceDueDate,
-            invoiceNote,
-            invoiceSubject,
-            invoiceVat,
-            invoiceDiscount,
-            invoiceTotal,
+            customerId: customer.id,
+            invoiceDueDate: invoiceData.invoiceDueDate,
+            invoiceNote: invoiceData.invoiceNote,
+            invoiceSubject: invoiceData.invoiceSubject,
+            invoiceVat: invoiceData.invoiceVat,
+            invoiceDiscount: invoiceData.invoiceDiscount,
+            invoiceTotal: invoiceData.invoiceTotal,
 
             invoiceItems: {
-                create: invoiceItems,
+                upsert: invoiceData.invoiceItems.map((invoiceItem) => ({
+                    where: { id: invoiceItem.invoiceItemId }, // Assuming each invoice item has an 'id' field
+                    update: {
+                        description: invoiceItem.description,
+                        quantity: invoiceItem.quantity,
+                        unitCost: invoiceItem.unitCost,
+                        vat: invoiceItem.vat,
+                        subTotal: invoiceItem.subTotal,
+                        subTotalPlusVat: invoiceItem.subTotal,
+                    },
+                    create: {
+                        description: invoiceItem.description,
+                        quantity: invoiceItem.quantity,
+                        unitCost: invoiceItem.unitCost,
+                        vat: invoiceItem.vat,
+                        subTotal: invoiceItem.subTotal,
+                        subTotalPlusVat: invoiceItem.subTotal,
+                    },
+                })),
             },
         },
 
@@ -230,8 +238,10 @@ const updateInvoiceCtrl = expressAsyncHandler(async (req, res) => {
         throw BadRequest();
     }
 
+    // await generateInvoicePDF(invoice);
+
     res.status(200).json({
-        // message: "Invoice created succesfully",
+        // message: "Invoice updated succesfully",
         invoice: invoice,
     });
 });

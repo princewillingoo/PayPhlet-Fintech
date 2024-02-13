@@ -37,20 +37,20 @@ const updateInvoiceSchema = Joi.object({
 
     customerEmail: Joi.string().email().required(),
     invoiceDueDate: Joi.date().required(),
-    invoiceVat: Joi.number().default(0.0),
-    invoiceDiscount: Joi.number().default(0.0),
+    invoiceDiscount: Joi.string().default("0%"),
     invoiceSubject: Joi.string().min(10).max(100).required(),
     invoiceNote: Joi.string()
         .min(10)
         .max(100)
         .default("Thanks for your patronage")
         .required(),
-    invoiceTotal: Joi.number().required(),
 
     invoiceItems: Joi.array().items({
+        invoiceItemId: Joi.string().uuid().required(),
         description: Joi.string().min(10).max(50).required(),
         quantity: Joi.number().required(),
         unitCost: Joi.number().required(),
+        vat: Joi.string().default("0%"),
     }),
 });
 
