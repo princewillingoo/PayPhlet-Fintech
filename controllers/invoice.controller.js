@@ -9,7 +9,10 @@ import {
     sendInvoiceSchema,
     updateInvoiceSchema,
 } from "../schemas/invoice.schema.js";
-import { generateInvoicePDF } from "../utils/invoice.util.js";
+import {
+    generateInvoicePDF,
+    calculateInvoiceTotalsAsync,
+} from "../utils/invoice.util.js";
 import { sendInvoice } from "../services/email.service.js";
 
 const { NotFound, BadRequest } = createHttpError;
@@ -52,55 +55,44 @@ const getInvoiceCtrl = expressAsyncHandler(async (req, res) => {
 });
 
 const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
-    const {
-        customerEmail,
-        invoiceDueDate,
-        invoiceSubject,
-        invoiceNote,
-        invoiceVat,
-        invoiceDiscount,
-        invoiceTotal,
-        invoiceItems,
-    } = await createInvoiceSchema.validateAsync(req.body);
+    let invoiceData = await createInvoiceSchema.validateAsync(req.body);
 
-    const status = "DRAFT";
-    const userId = req.payload.id;
     const invoiceNumber = generateUniqueId({
         length: 15,
         useLetters: true,
         useNumbers: true,
     });
 
+    invoiceData = await calculateInvoiceTotalsAsync(invoiceData);
+    console.log(invoiceData);
+
     // if customer does not exist then create
     let customer = await prisma.customer.findFirst({
         where: {
-            email: customerEmail,
-            userId: userId,
+            email: invoiceData.customerEmail,
+            userId: req.payload.id,
         },
     });
     if (!customer) {
         customer = await prisma.customer.create({
-            data: { email: customerEmail, userId: userId },
+            data: { email: invoiceData.customerEmail, userId: req.payload.id },
         });
     }
-    const customerId = customer.id;
 
     const invoice = await prisma.invoice.create({
         data: {
-            customerId,
-            invoiceDueDate,
-            invoiceNote,
-            invoiceSubject,
-            invoiceVat,
-            invoiceDiscount,
-
-            userId,
             invoiceNumber,
-            invoiceTotal,
-            status,
+            customerId: customer.id,
+            userId: req.payload.id,
+            invoiceSubject: invoiceData.invoiceSubject,
+            invoiceDueDate: invoiceData.invoiceDueDate,
+            invoiceVat: invoiceData.invoiceVat,
+            invoiceDiscount: invoiceData.invoiceDiscount,
+            invoiceNote: invoiceData.invoiceNote,
+            invoiceTotal: invoiceData.invoiceTotal,
 
             invoiceItems: {
-                create: invoiceItems,
+                create: invoiceData.invoiceItems,
             },
         },
 
@@ -110,7 +102,7 @@ const createInvoiceCtrl = expressAsyncHandler(async (req, res) => {
         },
     });
 
-    // console.log(invoice);
+    console.log(invoice);
 
     await generateInvoicePDF(invoice);
 

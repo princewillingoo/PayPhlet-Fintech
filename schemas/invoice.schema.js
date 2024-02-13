@@ -7,20 +7,19 @@ const getInvoiceSchema = Joi.object({
 const createInvoiceSchema = Joi.object({
     customerEmail: Joi.string().email().required(),
     invoiceDueDate: Joi.date().required(),
-    invoiceVat: Joi.number().default(0.0),
-    invoiceDiscount: Joi.number().default(0.0),
+    invoiceDiscount: Joi.string().default("0%"),
     invoiceSubject: Joi.string().min(10).max(100).required(),
     invoiceNote: Joi.string()
         .min(10)
         .max(100)
-        .default("Thanks for your patronage")
+        .default("Thanks for your patronage. It's a pleasure serving you.")
         .required(),
-    invoiceTotal: Joi.number().required(),
 
     invoiceItems: Joi.array().items({
         description: Joi.string().min(10).max(50).required(),
         quantity: Joi.number().required(),
         unitCost: Joi.number().required(),
+        vat: Joi.string().default("0%"),
     }),
 });
 

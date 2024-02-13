@@ -46,7 +46,9 @@ async function generateInvoicePDF(invoice) {
     // console.log(htmlStr)
     try {
         const formData = new FormData();
-        formData.append("files", stringReadStream(htmlStr), { filename: "index.html" });
+        formData.append("files", stringReadStream(htmlStr), {
+            filename: "index.html",
+        });
 
         const response = await axios.post(
             process.env.PDF_GENERATION_API,
@@ -80,4 +82,51 @@ async function generateInvoicePDF(invoice) {
     }
 }
 
-export { generateInvoicePDF };
+function calculateInvoiceTotalsAsync(invoiceData) {
+    return new Promise((resolve, reject) => {
+        // Calculate subtotal for each item and update the item object
+        invoiceData.invoiceItems.forEach((item) => {
+            const vatRate = parseFloat(item.vat) / 100;
+            item.subTotal = parseFloat(
+                (item.quantity * item.unitCost).toFixed(2)
+            );
+            item.subTotalPlusVat = parseFloat(
+                (item.subTotal * (1 + vatRate)).toFixed(2)
+            );
+        });
+
+        // Calculate net-total and net-total plus VAT for all items
+        const netTotal = invoiceData.invoiceItems
+            .reduce((total, item) => {
+                return total + parseFloat(item.subTotal);
+            }, 0)
+            .toFixed(2);
+
+        const netTotalPlusVat = invoiceData.invoiceItems
+            .reduce((total, item) => {
+                return total + parseFloat(item.subTotalPlusVat);
+            }, 0)
+            .toFixed(2);
+
+        // Calculate VAT total for all items
+        const netVatTotal = (netTotalPlusVat - netTotal).toFixed(2);
+
+        // Calculate discount amount
+        const discountAmount = (
+            (parseFloat(invoiceData.invoiceDiscount) / 100) *
+            netTotalPlusVat
+        ).toFixed(2);
+
+        // Calculate invoice total
+        const netInvoiceTotal = (netTotalPlusVat - discountAmount).toFixed(2);
+
+        // Update invoice object
+        invoiceData.invoiceTotal = parseFloat(netInvoiceTotal);
+        invoiceData.invoiceVat = parseFloat(netVatTotal);
+
+        // Resolve the promise with the updated invoice object
+        resolve(invoiceData);
+    });
+}
+
+export { generateInvoicePDF, calculateInvoiceTotalsAsync };

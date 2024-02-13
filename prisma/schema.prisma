@@ -53,13 +53,13 @@ model Invoice {
   id              String         @id @default(uuid()) @map(name: "id")
   invoiceDueDate  DateTime       @map(name: "invoice_due_date")
   invoiceSubject  String         @map(name: "invoice_subject")
-  invoiceNote     String?        @map(name: "invoice_note")
-  invoiceVat      Float?         @map(name: "invoice_vat")
-  invoiceDiscount Float?         @map(name: "invoice_discount")
+  invoiceNote     String?        @default("This is a sample invoice note.") @map(name: "invoice_note")
+  invoiceVat      Float          @default(0.00) @map(name: "invoice_vat")
+  invoiceDiscount String         @default("0%") @map(name: "invoice_discount%")
   paymentMethod   PaymentMethod? @map(name: "payment_method")
   invoiceNumber   String         @map(name: "invoice_number")
   invoiceTotal    Float          @map(name: "invoice_total")
-  status          Status         @map(name: "status")
+  status          Status         @default(DRAFT) @map(name: "status")
   createdAt       DateTime       @default(now()) @map(name: "created_at")
   updatedAt       DateTime       @updatedAt @map(name: "updated_at")
 
@@ -78,10 +78,13 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id          String @id @default(uuid()) @map(name: "id")
-  description String @map(name: "description")
-  quantity    Int    @map(name: "quantity")
-  unitCost    Float  @map(name: "unit_cost")
+  id              String @id @default(uuid()) @map(name: "id")
+  description     String @map(name: "description")
+  quantity        Int    @map(name: "quantity")
+  unitCost        Float  @map(name: "unit_cost")
+  vat             String @default("0%") @map(name: "vat")
+  subTotal        Float  @default(0.00) @map(name: "sub_total")
+  subTotalPlusVat Float  @default(0.00) @map("sub_total_plus_vat")
 
   invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId String  @map(name: "invoice_id")
