@@ -1,60 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Congratulations on Business Onboarding!</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 40px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: 50px auto;
-            text-align: center;
-        }
-        h1 {
-            color: #343a40;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        p {
-            color: #6c757d;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        .button {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        .accent {
-            color: #28a745;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Congratulations, <%= business.user.name %>!</h1>
-        <p>Your business onboarding process with <span class="accent">PayPhlet</span> is complete.</p>
-        <p>You're now ready to start managing invoices and payments with ease.</p>
-        <p>Thank you for choosing <span class="accent">PayPhlet</span>!</p>
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Congratulations on Business Onboarding!</title>
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f8f9fa;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                background-color: #fff;
+                border-radius: 8px;
+                padding: 40px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                max-width: 600px;
+                margin: 50px auto;
+                text-align: center;
+            }
+            h1 {
+                color: #343a40;
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+            .congrats {
+                color: #007bff;
+                font-size: 24px;
+                margin-bottom: 20px;
+                border: 2px solid transparent;
+                padding: 10px 20px;
+                border-radius: 8px;
+                display: inline-block;
+                background-color: #f8f9fa;
+            }
+            .congrats-border {
+                border-color: #007bff;
+                background-color: #f8f9fa;
+            }
+            p {
+                color: #6c757d;
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 15px;
+            }
+            .congrats-box {
+                background-color: #f0f0f0;
+                padding: 20px;
+                border-radius: 8px;
+                margin-top: 20px;
+                text-align: left;
+            }
+            .button {
+                display: inline-block;
+                background-color: #007bff;
+                color: #fff;
+                font-size: 16px;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+            .button:hover {
+                background-color: #0056b3;
+            }
+            .accent {
+                color: #2850a7;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="congrats congrats-border">Congratulations! 🎊🎉</div>
+
+            <div class="congrats-box">
+                <p>Hi, <%= user %>!</p>
+                <p>
+                    Thank you for successfully completing the business
+                    onboarding process with
+                    <span class="accent">PayPhlet</span>. Your business has been
+                    fully integrated.
+                </p>
+                <p>
+                    You can now start sending invoices to customers and managing
+                    payments. Enjoy!!!
+                </p>
+                <p>
+                    Thank you for choosing <span class="accent">PayPhlet</span>!
+                </p>
+            </div>
+        </div>
+    </body>
 </html>
