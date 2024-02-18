@@ -12,9 +12,10 @@ const currentModuleUrl = import.meta.url;
 const currentModuleDir = dirname(fileURLToPath(currentModuleUrl));
 const baseParentWorkingDir = path.resolve(currentModuleDir, "..");
 
-const authTemplatesDir = `templates/emails/auths`;
-const invoiceTemplatesDir = `templates/emails/invoices`;
-const invoiceFilesDir = `data/invoices/`;
+const authTemplatesDir = `templates/email/auth`;
+const invoiceTemplatesDir = `templates/email/invoice`;
+const businessTemplatesDir = `templates/email/business`;
+const invoiceFilesDir = `data/invoice/`;
 
 async function mailSender(email, title, body, attachments = []) {
     const transporter = nodemailer.createTransport({
@@ -132,4 +133,37 @@ async function sendInvoice(invoice, subject) {
     });
 }
 
-export { sendEmailVerificationToken, sendPasswordResetLink, sendInvoice };
+async function notifyBusinessOnboarding(business, subject) {
+    const templateFilePath = path.join(
+        baseParentWorkingDir,
+        businessTemplatesDir,
+        "businessOnboarding.ejs"
+    );
+
+    const data = { business };
+    const options = {};
+
+    ejs.renderFile(templateFilePath, data, options, async function (err, str) {
+        try {
+            if (err) {
+                throw InternalServerError();
+            }
+            const mailResponse = await mailSender(
+                business.user.email,
+                subject,
+                str
+            );
+            // console.log('Email sent successfully:', mailResponse);
+        } catch (e) {
+            console.log("Error sending email", e);
+            throw InternalServerError();
+        }
+    });
+}
+
+export {
+    sendEmailVerificationToken,
+    sendPasswordResetLink,
+    sendInvoice,
+    notifyBusinessOnboarding,
+};

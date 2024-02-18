@@ -37,14 +37,16 @@ const userRegisterController = expressAsyncHandler(async (req, res) => {
     let { email, phone_number, password, name } =
         await userRegisterSchema.validateAsync(req.body);
 
-    const userExist = await prisma.user.findUnique({
+    const userExist = await prisma.user.findFirst({
         where: {
-            email,
+            OR: [{ email }, { phoneNumber: phone_number }],
         },
     });
 
     if (userExist) {
-        throw Conflict(`${email} is unavailable!!!`);
+        throw Conflict(
+            `${email} or ${phone_number} is already associated with an account. Please, Confirm your details.`
+        );
     }
 
     password = await hashPassword(password);
