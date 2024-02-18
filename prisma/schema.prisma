@@ -11,31 +11,49 @@ datasource db {
 }
 
 model User {
-  id              String     @id @default(uuid())
-  email           String     @unique
+  id              String    @id @default(uuid())
+  email           String    @unique
   name            String
   password        String
-  phoneNumber     String     @map("phone_number")
-  businessName    String?    @map("business_name")
-  businessAddress String?    @map("business_address")
-  companyEmail    String?    @map("company_email")
-  rememberToken   String?    @map("remember_token")
-  isEmailVerified Boolean    @default(false) @map("is_email_verified")
-  emailVerifiedAt DateTime?  @map("email_verified_at")
-  createdAt       DateTime   @default(now()) @map("created_at")
-  updatedAt       DateTime   @updatedAt @map("updated_at")
-  Invoice         Invoice[]
-  Customer        Customer[]
+  phoneNumber     String    @unique @map("phone_number")
+  rememberToken   String?   @map("remember_token")
+  isEmailVerified Boolean   @default(false) @map("is_email_verified")
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  Invoice  Invoice[]
+  Customer Customer[]
+
+  business Business?
 
   @@map("users")
+}
+
+model Business {
+  id           String  @id @default(uuid())
+  name         String  @unique
+  email        String  @unique
+  phoneNumber  String  @map("phone_number") // @unique 
+  addressLine1 String  @map("address_line1")
+  addressLine2 String? @map("address_line2")
+  city         String
+  state        String
+  country      String
+  notes        String?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  @@map("business")
 }
 
 model Customer {
   id           String  @id @default(uuid())
   email        String  @unique
-  phoneNumber  String? @map("phone_number")
-  AddressLine1 String? @map("address_line1")
-  AddressLine2 String? @map("address_line2")
+  phoneNumber  String? @unique @map("phone_number")
+  addressLine1 String? @map("address_line1")
+  addressLine2 String? @map("address_line2")
   city         String?
   State        String?
   country      String?
@@ -53,13 +71,13 @@ model Invoice {
   id              String         @id @default(uuid()) @map(name: "id")
   invoiceDueDate  DateTime       @map(name: "invoice_due_date")
   invoiceSubject  String         @map(name: "invoice_subject")
-  invoiceNote     String?        @map(name: "invoice_note")
-  invoiceVat      Float?         @map(name: "invoice_vat")
-  invoiceDiscount Float?         @map(name: "invoice_discount")
+  invoiceNote     String?        @default("Thanks for your patronage") @map(name: "invoice_note")
+  invoiceVat      Float          @default(0.00) @map(name: "invoice_vat")
+  invoiceDiscount String         @default("0%") @map(name: "invoice_discount%")
   paymentMethod   PaymentMethod? @map(name: "payment_method")
   invoiceNumber   String         @map(name: "invoice_number")
   invoiceTotal    Float          @map(name: "invoice_total")
-  status          Status         @map(name: "status")
+  status          Status         @default(DRAFT) @map(name: "status")
   createdAt       DateTime       @default(now()) @map(name: "created_at")
   updatedAt       DateTime       @updatedAt @map(name: "updated_at")
 
@@ -78,10 +96,13 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id          String @id @default(uuid()) @map(name: "id")
-  description String @map(name: "description")
-  quantity    Int    @map(name: "quantity")
-  unitCost    Float  @map(name: "unit_cost")
+  id              String @id @default(uuid()) @map(name: "id")
+  description     String @map(name: "description")
+  quantity        Int    @map(name: "quantity")
+  unitCost        Float  @map(name: "unit_cost")
+  vat             String @default("0%") @map(name: "vat")
+  subTotal        Float  @default(0.00) @map(name: "sub_total")
+  subTotalPlusVat Float  @default(0.00) @map("sub_total_plus_vat")
 
   invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId String  @map(name: "invoice_id")

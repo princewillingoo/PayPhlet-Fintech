@@ -8,6 +8,7 @@ import {
 } from "../middleware/errHandler.middleware.js";
 import authRoutes from "../routes/auth.route.js";
 import invoiceRoutes from "../routes/invoice.route.js";
+import businessRuotes from "../routes/business.route.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 import "../config/development/redisConfig.js";
 
@@ -20,15 +21,16 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.set('views', './templates')
-app.set('view engine', 'ejs');
+app.set("views", "./templates");
+app.set("view engine", "ejs");
 
 app.get("/", async (req, res) => {
-    res.render('index')
+    res.render("index");
 });
 
 app.use("/auth", authRoutes);
 app.use("/invoices", invoiceRoutes);
+app.use("/business", businessRuotes);
 
 // err middleware
 app.use(notFound);
