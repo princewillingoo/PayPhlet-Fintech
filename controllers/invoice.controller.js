@@ -1,6 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import { PrismaClient } from "@prisma/client";
 import generateUniqueId from "generate-unique-id";
 import {
     createInvoiceSchema,
@@ -14,10 +13,9 @@ import {
     calculateInvoiceTotalsAsync,
 } from "../utils/invoice.util.js";
 import { sendInvoice } from "../services/email.service.js";
+import { prisma } from "../config/prisma.config.js";
 
 const { NotFound, BadRequest } = createHttpError;
-
-const prisma = new PrismaClient();
 
 const getInvoicesCtrl = expressAsyncHandler(async (req, res) => {
     const invoices = await prisma.invoice.findMany({

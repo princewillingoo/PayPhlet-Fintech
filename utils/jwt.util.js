@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import createHttpError from "http-errors";
-import { client as redisClient } from "../config/development/redisConfig.js";
+import { client as redisClient } from "../config/redis.config.js";
 
 const { Unauthorized, InternalServerError } = createHttpError;
 

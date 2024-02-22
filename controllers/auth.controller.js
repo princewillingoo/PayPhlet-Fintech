@@ -1,7 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import { PrismaClient } from "@prisma/client";
-
 import {
     userRegisterSchema,
     userLoginSchema,
@@ -26,12 +24,11 @@ import {
     sendEmailVerificationToken,
     sendPasswordResetLink,
 } from "../services/email.service.js";
-import { client as redisClient } from "../config/development/redisConfig.js";
+import { client as redisClient } from "../config/redis.config.js";
+import { prisma } from "../config/prisma.config.js";
 
 const { BadRequest, Conflict, NotFound, Unauthorized, InternalServerError } =
     createHttpError;
-
-const prisma = new PrismaClient();
 
 const userRegisterController = expressAsyncHandler(async (req, res) => {
     let { email, phone_number, password, name } =

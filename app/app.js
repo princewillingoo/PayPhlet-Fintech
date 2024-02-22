@@ -10,7 +10,7 @@ import authRoutes from "../routes/auth.route.js";
 import invoiceRoutes from "../routes/invoice.route.js";
 import businessRuotes from "../routes/business.route.js";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
-import "../config/development/redisConfig.js";
+import "../config/redis.config.js";
 
 // environment variables
 dotenv.config();

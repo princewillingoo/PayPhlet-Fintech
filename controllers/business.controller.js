@@ -1,12 +1,10 @@
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import { PrismaClient } from "@prisma/client";
 import { onBoardBusinessSchema } from "../schemas/business.schema.js";
 import { notifyBusinessOnboarding } from "../services/email.service.js";
+import { prisma } from "../config/prisma.config.js";
 
 const { Conflict } = createHttpError;
-
-const prisma = new PrismaClient();
 
 const onBoardBusinessCtrl = expressAsyncHandler(async (req, res) => {
     const {
