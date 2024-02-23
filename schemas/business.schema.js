@@ -17,4 +17,10 @@ const onBoardBusinessSchema = Joi.object({
     notes: Joi.string(),
 });
 
-export { onBoardBusinessSchema };
+const generateQrCodeSchema = Joi.object({
+    bankName: Joi.string().required(),
+    accountName: Joi.string().required(),
+    accountNo: Joi.string().pattern(new RegExp("^\\d{10}$")),
+});
+
+export { onBoardBusinessSchema, generateQrCodeSchema };

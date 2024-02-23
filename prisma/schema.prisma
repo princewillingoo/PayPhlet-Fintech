@@ -31,16 +31,23 @@ model User {
 }
 
 model Business {
-  id           String  @id @default(uuid())
-  name         String  @unique
-  email        String  @unique
-  phoneNumber  String  @map("phone_number") // @unique 
-  addressLine1 String  @map("address_line1")
-  addressLine2 String? @map("address_line2")
+  id           String   @id @default(uuid())
+  name         String   @unique
+  email        String   @unique
+  phoneNumber  String   @map("phone_number") // @unique 
+  addressLine1 String   @map("address_line1")
+  addressLine2 String?  @map("address_line2")
   city         String
   state        String
   country      String
+  bankName     String?  @map("bank_name")
+  accountNo    String?  @unique @map("account_no")
+  accountName  String?  @map("account_name")
+  qrCodeData   String?  @unique @map("qr_code_data")
+  qrCode       String?  @unique @map("qr_code")
   notes        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique
@@ -49,15 +56,17 @@ model Business {
 }
 
 model Customer {
-  id           String  @id @default(uuid())
-  email        String  @unique
-  phoneNumber  String? @unique @map("phone_number")
-  addressLine1 String? @map("address_line1")
-  addressLine2 String? @map("address_line2")
+  id           String   @id @default(uuid())
+  email        String   @unique
+  phoneNumber  String?  @unique @map("phone_number")
+  addressLine1 String?  @map("address_line1")
+  addressLine2 String?  @map("address_line2")
   city         String?
   State        String?
   country      String?
   notes        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   Invoice Invoice[]
 
@@ -96,13 +105,15 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id              String @id @default(uuid()) @map(name: "id")
-  description     String @map(name: "description")
-  quantity        Int    @map(name: "quantity")
-  unitCost        Float  @map(name: "unit_cost")
-  vat             String @default("0%") @map(name: "vat")
-  subTotal        Float  @default(0.00) @map(name: "sub_total")
-  subTotalPlusVat Float  @default(0.00) @map("sub_total_plus_vat")
+  id              String   @id @default(uuid()) @map(name: "id")
+  description     String   @map(name: "description")
+  quantity        Int      @map(name: "quantity")
+  unitCost        Float    @map(name: "unit_cost")
+  vat             String   @default("0%") @map(name: "vat")
+  subTotal        Float    @default(0.00) @map(name: "sub_total")
+  subTotalPlusVat Float    @default(0.00) @map("sub_total_plus_vat")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId String  @map(name: "invoice_id")

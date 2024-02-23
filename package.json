@@ -36,10 +36,12 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.8",
+    "qrcode": "^1.5.3",
     "redis": "^4.6.12",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/http-errors": "^2.0.4",
     "nodemon": "^3.0.2",
     "prisma": "^5.8.1"
   }

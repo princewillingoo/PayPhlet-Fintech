@@ -1,10 +1,14 @@
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import { onBoardBusinessSchema } from "../schemas/business.schema.js";
+import {
+    generateQrCodeSchema,
+    onBoardBusinessSchema,
+} from "../schemas/business.schema.js";
 import { notifyBusinessOnboarding } from "../services/email.service.js";
 import { prisma } from "../config/prisma.config.js";
+import { generateQR } from "../utils/business.utils.js";
 
-const { Conflict } = createHttpError;
+const { Conflict, Forbidden } = createHttpError;
 
 const onBoardBusinessCtrl = expressAsyncHandler(async (req, res) => {
     const {
@@ -71,4 +75,44 @@ const onBoardBusinessCtrl = expressAsyncHandler(async (req, res) => {
     });
 });
 
-export { onBoardBusinessCtrl };
+const generateQrCodeCtrl = expressAsyncHandler(async (req, res) => {
+    const dataQrCode = await generateQrCodeSchema.validateAsync(req.body);
+
+    const userBusiness = await prisma.business.findUnique({
+        where: {
+            userId: req.payload.id,
+        },
+
+        include: {
+            user: true,
+        },
+    });
+
+    if (!userBusiness) {
+        throw Forbidden();
+    }
+
+    const { qrCodeData, filePath } = await generateQR(dataQrCode, userBusiness);
+
+    const business = await prisma.business.update({
+        where: {
+            userId: req.payload.id,
+        },
+
+        data: {
+            qrCodeData,
+            qrCode: filePath,
+        },
+
+        include: {
+            user: true,
+        },
+    });
+
+    res.status(200).json({
+        success: "QR code generated successfully!",
+        business,
+    });
+});
+
+export { onBoardBusinessCtrl, generateQrCodeCtrl };
