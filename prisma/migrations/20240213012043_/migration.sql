@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "invoice_items" ADD COLUMN     "sub_total" DOUBLE PRECISION NOT NULL DEFAULT 0.00,
-ADD COLUMN     "sub_total_plus_vat" DOUBLE PRECISION NOT NULL DEFAULT 0.00;
