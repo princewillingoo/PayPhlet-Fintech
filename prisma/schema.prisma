@@ -122,19 +122,22 @@ model InvoiceItem {
 }
 
 model Payment {
-  id        String        @id @default(uuid())
-  amount    Float         @map("amount")
-  paymentId String        @unique @map("payment_id")
-  paid      Boolean       @default(false) @map("paid")
-  channel   PaymentMethod @map("channel")
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
+  id          String        @id @default(uuid()) @map("id")
+  amount      Float         @map("amount")
+  paymentRef  String        @unique @map("payment_ref")
+  paid        Boolean       @default(false) @map("paid")
+  channel     PaymentMethod @map("channel")
+  paystackRef String?       @unique @map("paystack_ref")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
   User   User   @relation(fields: [userId], references: [id])
   userId String
 
   Invoice   Invoice @relation(fields: [invoiceId], references: [id])
   invoiceId String  @unique
+
+  @@map("payment")
 }
 
 enum PaymentMethod {
